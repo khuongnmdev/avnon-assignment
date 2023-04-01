@@ -1,7 +1,7 @@
 import { BaseQuestion, QuestionType } from "./base-question";
 
-interface CheckboxOption {
-  title: string;
+export interface CheckboxOption {
+  name: string;
   value: QuestionType;
   isChecked: boolean;
 }

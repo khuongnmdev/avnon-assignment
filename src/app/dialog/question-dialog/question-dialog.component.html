@@ -1,7 +1,46 @@
-<p>
-  question-dialog works!
-</p>
+<form [formGroup]="form" (ngSubmit)="onFormSubmit()" class="form-new-question">
+  <h2>Add New Question Form</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>Question Type</mat-label>
+    <mat-select formControlName="type">
+      <mat-option
+        *ngFor="let type of typeQuestions; trackBy: trackByType"
+        [value]="type.value"
+      >
+        {{ type.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Question Title</mat-label>
+    <input type="text" matInput formControlName="title" />
+  </mat-form-field>
 
-<button mat-raised-button type="button" (click)="saveQuestion()">
-  Save
-</button>
+  <ng-container *ngIf="form.value.type === QuestionType.Checkbox">
+    <mat-form-field
+      appearance="fill"
+      formArrayName="options"
+      *ngFor="let option of optionsFormArray.controls; let i = index"
+    >
+      <mat-label>Option #{{ i + 1 }}</mat-label>
+      <input type="text" matInput formControlName="{{ i }}" />
+    </mat-form-field>
+
+    <a
+      href="javascript:void(0)"
+      *ngIf="canAddNewOption()"
+      (click)="addNewOption()"
+    >
+      Add another answer
+    </a>
+
+    <mat-checkbox formControlName="isRequired">
+      Allow user to specify own answer
+    </mat-checkbox>
+  </ng-container>
+  <mat-checkbox formControlName="isRequired">
+    This field is required
+  </mat-checkbox>
+
+  <button mat-raised-button type="submit" color="primary">Submit</button>
+</form>

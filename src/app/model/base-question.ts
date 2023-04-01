@@ -1,6 +1,6 @@
 export enum QuestionType {
-  Paragraph,
-  Checkbox,
+  Paragraph = 'Paragraph',
+  Checkbox = 'Checkbox',
 }
 
 export interface BaseQuestion {
