@@ -13,7 +13,8 @@ const MATERIAL_MODULE = [
 ]
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
+    ...MATERIAL_MODULE,
   ],
   exports: [...MATERIAL_MODULE],
 
