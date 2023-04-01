@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { QuestionDialogComponent } from 'src/app/dialog/question-dialog/question-dialog.component';
 
 @Component({
@@ -9,21 +9,22 @@ import { QuestionDialogComponent } from 'src/app/dialog/question-dialog/question
 })
 export class FormBuilderComponent implements OnInit {
 
-  constructor(public dialog: MatDialog) { }
+  constructor(
+    public dialog: MatDialog) { }
 
   ngOnInit() {
   }
 
-  async addQuestion() {
-    console.log('addQuestion work');
+  addQuestion() {
 
-    const value = await this.dialog.open(QuestionDialogComponent, {
+    const dialogRef  = this.dialog.open(QuestionDialogComponent, {
       data: {
         animal: 'panda',
       },
     });
 
-    console.log('addQuestion: ', value);
-
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result);
+    });
   }
 }
