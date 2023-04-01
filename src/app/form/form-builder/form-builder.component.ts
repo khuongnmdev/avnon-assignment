@@ -12,4 +12,9 @@ export class FormBuilderComponent implements OnInit {
   ngOnInit() {
   }
 
+  addQuestion() {
+    console.log('addQuestion work');
+
+
+  }
 }
