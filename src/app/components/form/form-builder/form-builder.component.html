@@ -1,0 +1,70 @@
+<mat-card>
+  <h2>Form Builder</h2>
+  <button mat-raised-button type="button" color="warn" (click)="addQuestion()">
+    Add Question
+  </button>
+
+  <ng-container *ngIf="questionsFormArray.controls.length > 0">
+    <form class="form-builder" [formGroup]="form" (ngSubmit)="onFormSubmit()">
+      <ng-container
+        *ngFor="let control of questionsFormArray.controls; let i = index"
+        formArrayName="questions"
+      >
+        <ng-container
+          *ngIf="control.value.type === QuestionType.Paragraph"
+          [formGroupName]="i"
+        >
+          <div class="question">
+            <mat-form-field class="question-field" appearance="fill">
+              <mat-label class="question-title">
+                #{{ i + 1 }}: {{ control.value.title }}
+              </mat-label>
+              <textarea matInput formControlName="value"></textarea>
+            </mat-form-field>
+          </div>
+        </ng-container>
+
+        <ng-container
+          *ngIf="control.value.type === QuestionType.Checkbox"
+          [formGroupName]="i"
+        >
+          <div class="question">
+            <mat-form-field class="question-field" appearance="fill">
+              <mat-label class="question-title">
+                #{{ i + 1 }}: {{ control.value.title }}
+              </mat-label>
+              <input hidden="true" matInput formControlName="value" />
+              <div class="question-options" *ngIf="control.value.options">
+                <ng-container
+                  *ngFor="let option of control.value.options; let i = index"
+                >
+                  <label>
+                    <mat-checkbox (change)="onToggle($event, option, control)">
+                      {{ option.name }}
+                    </mat-checkbox>
+                  </label>
+                </ng-container>
+              </div>
+
+              <div
+                class="question-other-input"
+                *ngIf="control.value.allowOtherOption"
+              >
+                <mat-label class="question-title"> Other: </mat-label>
+                <textarea
+                  matInput
+                  formControlName="otherValue"
+                  (input)="onOtherChange(control)"
+                ></textarea>
+              </div>
+            </mat-form-field>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <button mat-raised-button type="submit" color="primary">
+        Review my answer
+      </button>
+    </form>
+  </ng-container>
+</mat-card>

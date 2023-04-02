@@ -2,7 +2,7 @@
   <h2>Add New Question Form</h2>
   <mat-form-field appearance="fill">
     <mat-label>Question Type</mat-label>
-    <mat-select formControlName="type">
+    <mat-select formControlName="type" (ngModelChange)="onChangeType($event)">
       <mat-option
         *ngFor="let type of typeQuestions; trackBy: trackByType"
         [value]="type.value"
@@ -23,7 +23,7 @@
       *ngFor="let option of optionsFormArray.controls; let i = index"
     >
       <mat-label>Option #{{ i + 1 }}</mat-label>
-      <input type="text" matInput formControlName="{{ i }}" />
+      <input type="text" matInput [formControlName]="i" />
     </mat-form-field>
 
     <a
@@ -34,7 +34,7 @@
       Add another answer
     </a>
 
-    <mat-checkbox formControlName="isRequired">
+    <mat-checkbox formControlName="allowOtherOption">
       Allow user to specify own answer
     </mat-checkbox>
   </ng-container>

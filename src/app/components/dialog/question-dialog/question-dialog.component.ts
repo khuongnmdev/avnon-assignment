@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { QuestionType } from 'src/app/model/base-question';
 
@@ -15,7 +15,7 @@ export interface QuestionTypeOption {
   templateUrl: './question-dialog.component.html',
   styleUrls: ['./question-dialog.component.css']
 })
-export class QuestionDialogComponent implements OnInit {
+export class QuestionDialogComponent {
 
   QuestionType = QuestionType;
 
@@ -34,13 +34,8 @@ export class QuestionDialogComponent implements OnInit {
 
   constructor(
     public matDialogRef: MatDialogRef<QuestionDialogComponent>,
-    private readonly formBuilder: FormBuilder,
-
   ) {
     this.form = this.initForm();
-  }
-
-  ngOnInit() {
   }
 
   onFormSubmit() {
@@ -57,6 +52,14 @@ export class QuestionDialogComponent implements OnInit {
 
   get optionsFormArray() {
     return this.form.get('options') as FormArray;
+  }
+
+  // Add default option 1
+  onChangeType(event: Event) {
+    const options = this.form.get('options') as FormArray;
+    if (options.length < 1) {
+      options.push(new FormControl('', Validators.required));
+    }
   }
 
   addNewOption() {
