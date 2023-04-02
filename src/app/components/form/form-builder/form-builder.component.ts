@@ -1,29 +1,52 @@
-import { Component } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { BaseQuestion, QuestionType } from 'src/app/model/base-question';
+import { Router } from '@angular/router';
+import { first } from 'rxjs';
+import { QuestionType } from 'src/app/model/base-question';
+import { ParagraphQuestion } from 'src/app/model/paragraph-question';
+import { FormService } from 'src/app/services/form.service';
 import { CheckboxOption, CheckboxQuestion } from '../../../model/checkbox-question';
 import { QuestionDialogComponent } from '../../dialog/question-dialog/question-dialog.component';
 
-export type QuestionCreationType = CheckboxQuestion | BaseQuestion;
+export type QuestionCreationType = CheckboxQuestion | ParagraphQuestion;
+
+export type CheckboxSubmitQuestion = Omit<CheckboxQuestion, 'options'> & { options: CheckboxOption[] }
+
+export type QuestionSubmitType = CheckboxSubmitQuestion | ParagraphQuestion;
+
 
 @Component({
   selector: 'app-form-builder',
   templateUrl: './form-builder.component.html',
   styleUrls: ['./form-builder.component.css']
 })
-export class FormBuilderComponent {
+export class FormBuilderComponent implements OnInit {
 
   QuestionType = QuestionType;
 
   form: FormGroup;
 
   constructor(
-    public dialog: MatDialog,
-    private readonly formBuilder: FormBuilder,
+    private readonly dialog: MatDialog,
+    private readonly router: Router,
+    private readonly formService: FormService
   ) {
     this.form = this.initForm();
+  }
+
+  ngOnInit() {
+    this.formService.formData.pipe(
+      first(),
+    ).subscribe((data) => {
+      if (data) {
+        const questions = this.form.get('questions') as FormArray;
+        data.forEach(form => {
+          questions.push(this.loadExitedForm(form));
+        })
+      }
+    })
   }
 
   get questionsFormArray() {
@@ -58,6 +81,7 @@ export class FormBuilderComponent {
       return new FormGroup({
         title: new FormControl(checkboxData.title),
         type: new FormControl(checkboxData.type, Validators.required),
+        isRequired: new FormControl(checkboxData.isRequired),
         value: new FormControl('', questionData.isRequired ? Validators.required : []),
         options: new FormControl(initValues),
         allowOtherOption: new FormControl(checkboxData.allowOtherOption),
@@ -67,8 +91,31 @@ export class FormBuilderComponent {
     return new FormGroup({
       title: new FormControl(questionData.title),
       type: new FormControl(questionData.type, Validators.required),
+      isRequired: new FormControl(questionData.isRequired),
       value: new FormControl('', questionData.isRequired ? Validators.required : []),
     });
+  }
+
+  loadExitedForm(questionData: QuestionSubmitType) {
+    if (questionData.type === QuestionType.Checkbox) {
+      const checkboxData = <CheckboxSubmitQuestion>questionData;
+      return new FormGroup({
+        title: new FormControl(checkboxData.title),
+        type: new FormControl(checkboxData.type, Validators.required),
+        isRequired: new FormControl(checkboxData.isRequired),
+        value: new FormControl('', questionData.isRequired ? Validators.required : []),
+        options: new FormControl(checkboxData.options),
+        allowOtherOption: new FormControl(checkboxData.allowOtherOption),
+        otherValue: new FormControl(''),
+      });
+    }
+    return new FormGroup({
+      title: new FormControl(questionData.title),
+      type: new FormControl(questionData.type, Validators.required),
+      isRequired: new FormControl(questionData.isRequired),
+      value: new FormControl('', questionData.isRequired ? Validators.required : []),
+    });
+
   }
 
   onFormSubmit() {
@@ -76,7 +123,9 @@ export class FormBuilderComponent {
     if (this.form.invalid) {
       return;
     }
-    console.log('onFormSubmit', this.form.value)
+    const formData: QuestionSubmitType[] = this.form.value.questions;
+    this.formService.saveForm(formData);
+    this.router.navigate(['form', 'answer']);
   }
 
   onToggle(event: MatCheckboxChange, option: CheckboxOption, control: AbstractControl) {

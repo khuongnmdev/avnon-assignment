@@ -10,5 +10,4 @@ export interface CheckboxQuestion extends BaseQuestion {
   allowOtherOption: boolean;
   value?: CheckboxOption[];
   otherValue?: string;
-
 }

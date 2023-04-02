@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { FormBuilderComponent } from './components/form/form-builder/form-builder.component';
 import { FormAnswersComponent } from './components/form/form-answers/form-answers.component';
 import { QuestionDialogComponent } from './components/dialog/question-dialog/question-dialog.component';
+import { FormService } from './services/form.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,7 @@ import { QuestionDialogComponent } from './components/dialog/question-dialog/que
     ReactiveFormsModule,
     MaterialModuleModule,
   ],
-  providers: [],
+  providers: [FormService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
